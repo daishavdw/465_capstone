@@ -1,8 +1,0 @@
-$ awk 'END {print "SIFT", NR-1}' filtered_sift | sed 's/\s/\t/g' > numSift
-
-$ cut -f6 filtered_sift | sed '1d' | sort -u > siftGenes
-
-$ cut -f7 filtered_sift > siftScores
-
-
-
