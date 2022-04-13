@@ -26,9 +26,9 @@ sourceNum = bind_rows(numClinGen, numSift)
 sourceNum = bind_rows(sourceNum, numCadd)
 
 
-ggplot(data=sourceNum) +
-  geom_col(aes(x=Source, y=Count)) +
-  geom_text(aes(x=Source, y=Count, label = Count), vjust = -0.5) +
+ggplot(data=sourceNum, aes(x=Source, y=Count, label = format(Count, big.mark = ",", scientific = FALSE))) +
+  geom_col() +
+  geom_text(nudge_x = -0.05, vjust= -0.5) +
   theme_bw()
 
 geneVenn = list(ClinGen = clinGenGenes, SIFT = siftGenes, CADD = caddGenes)
@@ -46,7 +46,7 @@ ggplot(data=siftScores, aes(x=factor(Value), y=Count)) +
   labs(x = "SIFT Score") +
   theme_bw()
 
-ggplot(data=caddScores, aes(x=factor(Score), y=Count)) +
+ggplot(data=caddScores, aes(x=factor(Score), y=log(Count))) +
   geom_col(position = position_nudge(x = -0.5), width=1) +
-  labs(x = "Phred Score") +
+  labs(x = "Phred Score", y = "log(Count)") +
   theme_bw()
