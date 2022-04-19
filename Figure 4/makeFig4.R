@@ -9,6 +9,7 @@ numClinGen = summarize(clinGen, Count = n()) %>%
   relocate(Source, .before = Count)
 
 clinGenGenes = unique(pull(clinGen, "HGNC Gene Symbol"))
+clinGenGenes <- clinGenGenes[!clinGenGenes %in% c("N/A", "-")]
 
 fig3Clin = select(clinGen, Assertion) %>%
   group_by(Assertion) %>%
@@ -26,9 +27,9 @@ sourceNum = bind_rows(numClinGen, numSift)
 sourceNum = bind_rows(sourceNum, numCadd)
 
 
-ggplot(data=sourceNum) +
-  geom_col(aes(x=Source, y=Count)) +
-  geom_text(aes(x=Source, y=Count, label = Count), vjust = -0.5) +
+ggplot(data=sourceNum, aes(x=Source, y=Count, label = format(Count, big.mark = ",", scientific = FALSE))) +
+  geom_col() +
+  geom_text(nudge_x = -0.05, vjust= -0.5) +
   theme_bw()
 
 geneVenn = list(ClinGen = clinGenGenes, SIFT = siftGenes, CADD = caddGenes)
@@ -37,7 +38,7 @@ ggvenn(data=geneVenn, show_percentage = FALSE)
 
 ggplot() +
   geom_col(data=fig3Clin, aes(x=Assertion, y=Num)) +
-  labs(y = "Count") +
+  labs(y = "Count", x = "ClinGen Assertion") +
   scale_x_discrete(labels = function(Assertion) str_wrap(Assertion, width = 10)) +
   theme_bw()
 
@@ -46,7 +47,7 @@ ggplot(data=siftScores, aes(x=factor(Value), y=Count)) +
   labs(x = "SIFT Score") +
   theme_bw()
 
-ggplot(data=caddScores, aes(x=factor(Score), y=Count)) +
+ggplot(data=caddScores, aes(x=factor(Score), y=log(Count))) +
   geom_col(position = position_nudge(x = -0.5), width=1) +
-  labs(x = "Phred Score") +
+  labs(x = "CADD Phred-like C Score", y = "log(Count)") +
   theme_bw()
